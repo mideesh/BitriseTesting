@@ -16,6 +16,11 @@
 default_platform(:android)
 
 platform :android do
+
+    before_all do
+        # ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
+    end
+
 ##  desc "Runs all the tests"
 ##  lane :test do
 ##    gradle(task: "test")
@@ -59,7 +64,14 @@ platform :android do
         crashlytics_api_secret = ENV["CRASHLYTICS_BUILD_SECRET"]
         config_url = ENV["APP_CONFIG_URL"]
 
-        gradle(task: "clean assembleRelease crashlyticsUploadDistributionRelease", flags: "-PversionNumber=#{opt_version_number} -PbuildNumber=#{opt_build_number} -PbetaDistributionReleaseNotesFilePath=#{notes_path} -PbetaDistributionGroupAliases=#{opt_groups} -PbetaDistributionNotifications=true -PcrashlyticsApiKey=#{crashlytics_api_token} -PcrashlyticsApiSecret=#{crashlytics_api_secret}")
+        gradle(task: "clean assembleRelease crashlyticsUploadDistributionRelease" ,flags: "-PversionNumber=#{opt_version_number} -PbuildNumber=#{opt_build_number} -PbetaDistributionReleaseNotesFilePath=#{notes_path} -PbetaDistributionGroupAliases=#{opt_groups} -PbetaDistributionNotifications=true -PcrashlyticsApiKey=#{crashlytics_api_token} -PcrashlyticsApiSecret=#{crashlytics_api_secret}",properties: {
+                 "android.injected.signing.store.file" => "keystore",
+                 "android.injected.signing.store.password" => "android",
+                 "android.injected.signing.key.alias" => "android",
+                 "android.injected.signing.key.password" => "android",
+             }
+        )
+        end
     end
 
 ##  desc "Submit a new Beta Build to Crashlytics Beta"
