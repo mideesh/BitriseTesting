@@ -71,7 +71,6 @@ platform :android do
                  "android.injected.signing.key.password" => "android",
              }
         )
-        end
     end
 
 ##  desc "Submit a new Beta Build to Crashlytics Beta"
