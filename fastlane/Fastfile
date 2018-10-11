@@ -16,23 +16,43 @@
 default_platform(:android)
 
 platform :android do
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "test")
+##  desc "Runs all the tests"
+##  lane :test do
+##    gradle(task: "test")
+##  end
+
+    notes = get_changelog_from_tag match_tag: "qa*"
+    opt_version_number = get_version_from_tag(match_tag: "qa*")
+    opt_build_number = get_commit_count.to_i
+
+    require 'tempfile'
+
+    changelog = Tempfile.new('changelog')
+    changelog.write(notes)
+    changelog.close
+
+    notes_path = changelog.path
+    opt_groups= "qa-team"
+
+    crashlytics_api_token = ENV["CRASHLYTICS_API_TOKEN"]
+    crashlytics_api_secret = ENV["CRASHLYTICS_BUILD_SECRET"]
+    config_url = ENV["APP_CONFIG_URL"]
+
+    gradle(task: "clean assembleInternal crashlyticsUploadDistributionInternal", flags: "-PversionNumber=#{opt_version_number} -PbuildNumber=#{opt_build_number} -PbetaDistributionReleaseNotesFilePath=#{notes_path} -PbetaDistributionGroupAliases=#{opt_groups} -PbetaDistributionNotifications=true -PcrashlyticsApiKey=#{crashlytics_api_token} -PcrashlyticsApiSecret=#{crashlytics_api_secret}")
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
-  lane :beta do
-    gradle(task: "clean assembleRelease")
-    crashlytics
+##  desc "Submit a new Beta Build to Crashlytics Beta"
+##  lane :beta do
+##    gradle(task: "clean assembleRelease")
+##    crashlytics
   
     # sh "your_script.sh"
     # You can also use other beta testing services here
-  end
+##  end
 
-  desc "Deploy a new version to the Google Play"
-  lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
-  end
+##  desc "Deploy a new version to the Google Play"
+##  lane :deploy do
+##    gradle(task: "clean assembleRelease")
+##    upload_to_play_store
+##  end
 end
