@@ -17,9 +17,22 @@ android {
         applicationId "com.bitrisetesting.mideesh.bitrisetesting"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        //versionCode 1
+        //versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        if (project.hasProperty('versionNumber')) {
+            versionName versionNumber ?: 'dev'
+        } else {
+            versionName 'dev'
+        }
+
+        if (project.hasProperty('buildNumber')) {
+            versionCode buildNumber.toInteger()
+        } else {
+            versionCode 1
+        }
+
     }
 
     signingConfigs {
@@ -32,9 +45,15 @@ android {
     }
 
     buildTypes {
+
+        debug {
+            versionNameSuffix "(DEV)"
+        }
+
         release {
+            versionNameSuffix "(REL)"
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
